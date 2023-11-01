@@ -5,20 +5,31 @@ orientada a objetos)
  using System.Collections;
  using System.Threading.Tasks;
 
+
  namespace APP8_LINQ;
  
 internal class Program
 {
+    /// <summary>
+    /// Productos represnta el catalogo de productos del sistema en la memoria RAM.
+    /// </summary>
     public static List<Producto> Productos { get; set; } = new List<Producto>();
     private static void Main(string[] args)
     {
-        Productos = new List<Producto>();
+        Productos = new List<Producto>(){
+            new Producto(){ Codigo = "A001", Nombre = "Aguacate",  Precio = 45 },
+            new Producto(){ Codigo = "A002", Nombre = "Yuca",  Precio = 7 },
+            new Producto(){ Codigo = "B002", Nombre = "Queso",  Precio = 120 },
+            new Producto(){ Codigo = "B003", Nombre = "Huevo",  Precio = 7 },
+            new Producto(){ Codigo = "C001", Nombre = "Pollo",  Precio = 250 },
+            new Producto(){ Codigo = "C005", Nombre = "Platano",  Precio = 20 },
+        };
         while(true){
             Console.WriteLine("Inventario de productos");
         //Declaro mi coleccion de datos de tipo Producto
         //Presentarle opciones al usuario asi:
         var opcion = MostrarMenu(); 
-        switch(opcion){
+        switch(opcion.ToUpper()){
             case Opciones.Salir: return;
             case Opciones.MostrarProductos: MostrarProductos(); break;
             case Opciones.RegistrarProductos: CrearProducto(); break;
@@ -30,6 +41,8 @@ internal class Program
         //[X] Salir
         }
     }
+   
+   
     public static async Task LimpiarConsola(){
         for(int tiempo = 3; tiempo>0; tiempo--)
         {
@@ -97,6 +110,14 @@ internal class Program
             Console.WriteLine($"{posicion}) {producto.Informacion}");
         }
     }
+    private static void MostrarProductos(List<Producto> data){
+         Console.WriteLine($"Hola actualmente hay ({data.Count}) productos listados:");
+        int posicion = 0;
+        foreach(var producto in data){
+            posicion++;
+            Console.WriteLine($"{posicion}) {producto.Informacion}");
+        }
+    }
     private static void EliminarProducto()
     {
         Console.WriteLine("Que producto deseas eliminar? Selecciona un indice: ");
@@ -114,22 +135,21 @@ internal class Program
     
         LimpiarConsola().Wait();
     }
-    //Uso de LINQ para realizar busquedas
     private static void BuscarProducto()
     {
         Console.WriteLine("Que estas buscando: ");
-        var filtro = Console.ReadLine();
+        var filtro = (Console.ReadLine()).ToLower();
         var ProductosEncontrados =
         Productos
         .Where
         (
             p //P representa el Producto (objeto) en la Lista (List)
         => 
-            p.Codigo.Contains(filtro) ||
-            p.Nombre.Contains(filtro) 
+            p.Codigo.ToLower().Contains(filtro) ||
+            p.Nombre.ToLower().Contains(filtro) 
         )
         .ToList();
-        Console.WriteLine($"Existe ({ProductosEncontrados.Count}) segun la busqueda...");+
+        MostrarProductos(ProductosEncontrados);
     }
 
 }
